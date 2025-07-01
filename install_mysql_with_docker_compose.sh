@@ -54,7 +54,6 @@ EOF
 
 # 6. Create docker-compose.yaml
 cat <<EOF > "$COMPOSE_FILE"
-version: '3.8'
 services:
   mysql:
     image: mysql:lts
