@@ -76,7 +76,7 @@ character-set-server=utf8mb4
 collation-server=utf8mb4_unicode_ci
 
 # InnoDB 缓冲池大小，可根据服务器内存调整 (例如 512M, 1G)
-innodb_buffer_pool_size=256M
+innodb_buffer_pool_size=512M
 
 # 最大连接数
 max_connections=200
@@ -102,6 +102,7 @@ services:
       TZ: 'Asia/Shanghai'
     ports:
       - "3306:3306"
+      - "33060:33060"
     volumes:
       - ./data:/var/lib/mysql
       - ./conf.d:/etc/mysql/conf.d
