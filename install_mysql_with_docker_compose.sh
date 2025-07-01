@@ -49,7 +49,6 @@ innodb_buffer_pool_size=256M
 max_connections=200
 connect_timeout=10
 skip-name-resolve
-ssl_mode=DISABLED
 EOF
 
 # 6. Create docker-compose.yaml
