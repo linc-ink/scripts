@@ -1,4 +1,5 @@
 #!/bin/bash
+
 # 如果任何命令失败，脚本将立即退出
 set -e
 
@@ -12,10 +13,38 @@ CONF_DIR="$MYSQL_HOME/conf.d"
 # 数据持久化目录
 DATA_DIR="$MYSQL_HOME/data"
 
+# --- 依赖检查 ---
+# 检查 Docker 和 Docker Compose 是否安装
+check_dependencies() {
+    # 检查 docker
+    if ! command -v docker &> /dev/null; then
+        echo "错误: Docker 未安装。"
+        echo "请先安装 Docker，然后再运行此脚本。"
+        exit 1
+    fi
+
+    # 检查 docker compose (v2) 或 docker-compose (v1)
+    if docker compose version &> /dev/null; then
+        COMPOSE_CMD="docker compose"
+    elif command -v docker-compose &> /dev/null; then
+        COMPOSE_CMD="docker-compose"
+    else
+        echo "错误: 未找到 Docker Compose。"
+        echo "请确保您已安装 Docker Compose (推荐使用 'docker compose' 插件)。"
+        echo "访问 https://docs.docker.com/compose/install/ 获取安装指南。"
+        exit 1
+    fi
+}
+
 # --- 欢迎信息 ---
 echo "欢迎使用 MySQL (LTS) Docker Compose 安装脚本。"
 echo "此脚本将在 $MYSQL_HOME 中创建所有必需的文件。"
 echo "----------------------------------------------------"
+
+# --- 运行依赖检查 ---
+check_dependencies
+echo "依赖检查通过。使用 '$COMPOSE_CMD' 命令。"
+echo ""
 
 # --- 1. 询问用户输入容器名 ---
 read -p "请输入您希望的 Docker 容器名称 (默认为: mysql-lts): " CONTAINER_NAME
@@ -30,8 +59,6 @@ echo ""
 echo "正在创建工作目录..."
 mkdir -p "$CONF_DIR"
 mkdir -p "$DATA_DIR"
-# 设置数据目录权限，确保 mysql 用户可以写入
-# chown -R 999:999 "$DATA_DIR"
 echo "目录 $MYSQL_HOME, $CONF_DIR, $DATA_DIR 已创建。"
 echo ""
 
@@ -50,7 +77,7 @@ character-set-server=utf8mb4
 collation-server=utf8mb4_unicode_ci
 
 # InnoDB 缓冲池大小，可根据服务器内存调整 (例如 512M, 1G)
-innodb_buffer_pool_size=512M
+innodb_buffer_pool_size=256M
 
 # 最大连接数
 max_connections=200
@@ -97,7 +124,7 @@ echo "准备就绪！正在 $MYSQL_HOME 目录中启动 MySQL 容器..."
 cd "$MYSQL_HOME"
 # 将变量导出，以便 docker-compose 可以访问
 export CONTAINER_NAME
-docker-compose up -d
+$COMPOSE_CMD up -d
 
 # --- 7. 显示最终信息 ---
 echo ""
@@ -114,6 +141,5 @@ echo "  - 数据库文件持久化在: $DATA_DIR"
 echo "  - 配置文件位于: $CONF_DIR"
 echo "  - 您可以使用以下命令连接到数据库:"
 echo "    mysql -h 127.0.0.1 -P 3306 -u root -p"
-echo "  - 如需停止服务，请在 $MYSQL_HOME 目录下运行: docker-compose down"
+echo "  - 如需停止服务，请在 $MYSQL_HOME 目录下运行: $COMPOSE_CMD down"
 echo "----------------------------------------------------"
-
