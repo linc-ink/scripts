@@ -7,7 +7,7 @@ MYSQL_HOME="/opt/mysql"
 COMPOSE_FILE="$MYSQL_HOME/docker-compose.yaml"
 CONF_DIR="$MYSQL_HOME/conf.d"
 DATA_DIR="$MYSQL_HOME/data"
-CONTAINER_NAME="mysql-lts"
+CONTAINER_NAME="mysql"
 
 # --- Dependency Check ---
 check_dependencies() {
