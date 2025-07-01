@@ -1,5 +1,4 @@
 #!/bin/bash
-
 # 如果任何命令失败，脚本将立即退出
 set -e
 
@@ -93,8 +92,6 @@ echo ""
 echo "正在生成 docker-compose.yaml 文件..."
 # 使用 cat 和 EOF 来写入多行文本
 cat <<EOF > "$COMPOSE_FILE"
-version: '3.8'
-
 services:
   mysql:
     image: mysql:lts
@@ -108,8 +105,6 @@ services:
     volumes:
       - ./data:/var/lib/mysql
       - ./conf.d:/etc/mysql/conf.d
-    command:
-      --default-authentication-plugin=mysql_native_password
 
 networks:
   default:
